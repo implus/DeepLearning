@@ -1,17 +1,17 @@
-from logRegression import *
 from BFGS import *
+from LBFGS import *
 from numpy import *
 import matplotlib.pyplot as plt
 import time
 
-iterateTime = 400
+iterateTime = 300
 
 def loadData():
 	train_x = []
 	train_y = []
 	print 'ready to open file testSet.txt'
-        fileIn = open('./testSet.txt')
-        #fileIn = open('./in.txt')
+        #fileIn = open('./testSet.txt')
+        fileIn = open('./in.txt')
 	num = 0
 	for line in fileIn.readlines():
 		lineArr = line.strip().split()
@@ -23,6 +23,7 @@ def loadData():
 	return mat(train_x), mat(train_y).transpose()
 
 
+'''
 ## step 1: load data
 print "step 1: load data..."
 train_x, train_y = loadData()
@@ -39,21 +40,20 @@ print "step 4: show the result..."
 print 'The classify accuracy is: %.3f%%\n' % (ac * 100)
 print w
 showLogRegres(w, train_x, train_y)
+'''
 
-
-
-## step 2: training...
+## step 1: load data
+print "step 1: load data..."
+train_x, train_y = loadData()
+test_x = train_x; test_y = train_y
+print "---------------LBFGS method---------------------"
+opts = {'maxIter': 100, 'windowLen': 2}
 print "step 2: training..."
-# 'gradDescent', 'smoothStocGradDescent', stocGradDescent
-opts = {'alpha': 0.1, 'maxIter': iterateTime, 'optimizeType': 'gradDescent' }
-optimalWeights = trainLogRegres(train_x, train_y, opts)
-
-## step 3: testing
+w = trainLBFGS(train_x, train_y, opts)
 print "step 3: testing..."
-accuracy = testLogRegres(optimalWeights, test_x, test_y)
-
-## step 4: show the result
+ac = testLogRegres(w, train_x, train_y)
 print "step 4: show the result..."	
-print 'The classify accuracy is: %.3f%%\n' % (accuracy * 100)
-showLogRegres(optimalWeights, train_x, train_y) 
+print 'The classify accuracy is: %.3f%%\n' % (ac * 100)
+print w
+showLogRegres(w, train_x, train_y)
 
