@@ -6,6 +6,7 @@ from logRegression import *
 EXP_LIMIT = 20
 eps = 1e-300
 inf = 1e300
+tereps = 1e-3
 
 def sigmoid(a):
     return  1.0 / (1.0 + exp(-a))
@@ -40,12 +41,23 @@ def Ja(w, x, y):
 
 
 def optStep(w, d, x, y):
-    lamda = 1
+    lamda = sqrt((w.transpose() * w)[0, 0] / float((w - d).transpose() * (w - d)));
+    #lamda = sqrt(1.0 / float((w - d).transpose() * (w - d)));
+    #lamda = 0.1;
+    #lamda = (w.transpose() * w)[0, 0] / (d.transpose() * d)[0, 0]
+    c1 = 1e-4; c2 = 0.01
+    while Ja(w + lamda * d, x, y) > Ja(w, x, y) + c1 * lamda * gk(w, x, y).transpose() * d or gk(w + lamda * d, x, y).transpose() * d < c2 * gk(w, x, y).transpose() * d:
+        while Ja(w + lamda * d, x, y) > Ja(w, x, y) + c1 * lamda * gk(w, x, y).transpose() * d:
+            lamda = 0.5 * lamda
+        if gk(w + lamda * d, x, y).transpose() * d < c2 * gk(w, x, y).transpose() * d:
+            lamda = 1.5 * lamda
+
+    return lamda
+"""    
+def optStep(w, d, x, y):
     while Ja(w + d * lamda, x, y) > Ja(w, x, y) + 0.1 * lamda * gk(w, x, y).transpose() * d:
         lamda = 0.9 * lamda
     return lamda
-
-"""    
 def optStep(w, d, x, y):
     return 0.09
 """
@@ -65,12 +77,13 @@ def trainBFGS(train_x, train_y, opts):
     for k in range(maxIter):
         d = -D * g
         lamda = optStep(w, d, train_x, train_y)
-        if( lamda < 0.00001 ):
-            break
         s = lamda * d
         w = w + s
         ng = gk(w, train_x, train_y)
-        if ng.transpose() * ng < eps:
+
+        accuracy = testLogRegres(w, train_x, train_y)
+        print '%d times, The classify accuracy is: %.3f%%\tlamda = %f\tgradecent = %f\tchangeofw = %f' % (k, accuracy * 100, lamda,(ng.transpose() * ng), (s.transpose() * s) )
+        if ng.transpose() * ng < tereps:
             break
         y = ng - g
         g = ng
@@ -78,10 +91,6 @@ def trainBFGS(train_x, train_y, opts):
         p = (1 / (s.transpose() * y))
         D = D + s * s.transpose() * float(p + p * p * (y.transpose() * D * y)) - (D * y * s.transpose() + s * y.transpose() * D) * float(p) # O(n^2)
         k = k + 1
-        #if k % 10 > -1:
-        accuracy = testLogRegres(w, train_x, train_y)
-        print 'lamda = %f' % lamda
-        print '%d times, The classify accuracy is: %.3f%%' % (k, accuracy * 100)
     
     print 'Congratulations, training complete! Took %fs!' % (time.time() - startTime)
     return w

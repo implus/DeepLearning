@@ -1,17 +1,20 @@
 from BFGS import *
 from LBFGS import *
 from numpy import *
+from LxBFGS import *
 import matplotlib.pyplot as plt
 import time
 
 iterateTime = 300
 
-def loadData():
+def loadData(fileStr):
 	train_x = []
 	train_y = []
 	print 'ready to open file testSet.txt'
         #fileIn = open('./testSet.txt')
-        fileIn = open('./in.txt')
+        #fileIn = open('./in.txt')
+        #fileIn = open('./in1000.txt')
+        fileIn = open(fileStr)
 	num = 0
 	for line in fileIn.readlines():
 		lineArr = line.strip().split()
@@ -22,38 +25,56 @@ def loadData():
 	print '---- total iterator time is %d ----' % iterateTime
 	return mat(train_x), mat(train_y).transpose()
 
+def gaoBFGS(fileStr, maxIter):
+    train_x, train_y = loadData(fileStr)
+    test_x = train_x; test_y = train_y
+    print "---------------BFGS method---------------------"
+    opts = {'maxIter': maxIter}
+    w = trainBFGS(train_x, train_y, opts)
+    ac = testLogRegres(w, train_x, train_y)
+    print 'The classify accuracy is: %.3f%%\n' % (ac * 100)
+    print w
+    showLogRegres(w, train_x, train_y)
 
+def gaoLxBFGS(fileStr, maxIter):
+    train_x, train_y = loadData(fileStr)
+    test_x = train_x; test_y = train_y
+    print "---------------LxBFGS method---------------------"
+    opts = {'maxIter': maxIter}
+    w = trainLxBFGS(train_x, train_y, opts)
+    ac = testLogRegres(w, train_x, train_y)
+    print 'The classify accuracy is: %.3f%%\n' % (ac * 100)
+    print w
+    showLogRegres(w, train_x, train_y)
+
+def gaoLBFGS(fileStr, maxIter, windowLen):
+    train_x, train_y = loadData(fileStr)
+    test_x = train_x; test_y = train_y
+    print "---------------LBFGS method---------------------"
+    opts = {'maxIter': maxIter, 'windowLen': windowLen}
+    w = trainLBFGS(train_x, train_y, opts)
+    ac = testLogRegres(w, train_x, train_y)
+    print 'The classify accuracy is: %.3f%%\n' % (ac * 100)
+    print w
+    showLogRegres(w, train_x, train_y)
+
+
+#nosqrt+0.01 { 17, 1, 6 }  
+gaoLBFGS('./testSet.txt', 100, 2);
+gaoLBFGS('./in1000.txt', 100, 2);
+gaoLBFGS('./in.txt', 100, 2);
+
+
+#nosqrt+0.01 { 10, 16, 4 }
 '''
-## step 1: load data
-print "step 1: load data..."
-train_x, train_y = loadData()
-test_x = train_x; test_y = train_y
-
-
-print "---------------BFGS method---------------------"
-opts = {'maxIter': 10}
-print "step 2: training..."
-w = trainBFGS(train_x, train_y, opts)
-print "step 3: testing..."
-ac = testLogRegres(w, train_x, train_y)
-print "step 4: show the result..."	
-print 'The classify accuracy is: %.3f%%\n' % (ac * 100)
-print w
-showLogRegres(w, train_x, train_y)
+gaoBFGS('./testSet.txt', 20);
+gaoBFGS('./in1000.txt', 100);
+gaoBFGS('./in.txt', 20);
 '''
 
-## step 1: load data
-print "step 1: load data..."
-train_x, train_y = loadData()
-test_x = train_x; test_y = train_y
-print "---------------LBFGS method---------------------"
-opts = {'maxIter': 100, 'windowLen': 2}
-print "step 2: training..."
-w = trainLBFGS(train_x, train_y, opts)
-print "step 3: testing..."
-ac = testLogRegres(w, train_x, train_y)
-print "step 4: show the result..."	
-print 'The classify accuracy is: %.3f%%\n' % (ac * 100)
-print w
-showLogRegres(w, train_x, train_y)
-
+#nosqrt+0.01 { 10, 17, 5 }
+'''
+gaoLxBFGS('./testSet.txt', 20);
+gaoLxBFGS('./in1000.txt', 100);
+gaoLxBFGS('./in.txt', 40);
+'''

@@ -1,7 +1,6 @@
 from numpy import *
 import matplotlib.pyplot as plt
 import time
-from logRegression import *
 
 EXP_LIMIT = 20
 tereps = 1e-3
@@ -11,8 +10,6 @@ inf = 1e300
 def sigmoid(a):
     return  1.0 / (1.0 + exp(-a))
 
-def gki(w, xi, yi):
-    return (sigmoid(w.transpose() * xi) - yi) * xi
 def gk(w, x, y):
     return ((sigmoid(x * w) - y).transpose() * x).transpose()
 
@@ -33,20 +30,13 @@ def Ja(w, x, y):
     t = sigmoid(x * w)
     sx, sy = shape(y)
     I = ones((sx, sy))
-# ***************** very important !! double limit exceeded, deal with inf *******************
     for i in range(sx):
         if dcmp(t[i, 0] - 1) == 0 or dcmp(t[i, 0]) == 0:
             return inf
     return -(y.transpose() * log(t) + (I - y).transpose() * log(I - t))
 
 def optStep(w, d, x, y):
-    lamda = ((w.transpose() * w)[0, 0] / float((w - d).transpose() * (w - d)));
-    #lamda = 1 / lamda;
-    #lamda = sqrt(float((w - d).transpose() * (w - d)));
-    #lamda = 1;
-    #p = float((w.transpose() * w)[0, 0])
-    #lamda = sqrt((w.transpose() * w)[0, 0] / (d.transpose() * d)[0, 0])
-    #lamda = ((w.transpose() * w)[0, 0] / float((w - d).transpose() * (w - d)));
+    lamda = ((w.transpose() * w)[0, 0] / ((w - d).transpose() * (w - d))[0, 0]);
     c1 = 1e-4; c2 = 0.01
     while Ja(w + lamda * d, x, y) > Ja(w, x, y) + c1 * lamda * gk(w, x, y).transpose() * d or gk(w + lamda * d, x, y).transpose() * d < c2 * gk(w, x, y).transpose() * d:
         while Ja(w + lamda * d, x, y) > Ja(w, x, y) + c1 * lamda * gk(w, x, y).transpose() * d:
@@ -56,17 +46,15 @@ def optStep(w, d, x, y):
     return lamda
 
 
-"""
-def optStep(w, d, x, y):
-    lamda = sqrt((w.transpose() * w)[0, 0] / float((w - d).transpose() * (w - d)));
-    #lamda = (w.transpose() * w)[0, 0] / (d.transpose() * d)[0, 0]
-    while Ja(w + d * lamda, x, y) > Ja(w, x, y) + 0.1 * lamda * gk(w, x, y).transpose() * d:
-        lamda = 0.5 * lamda
-    return lamda
-def optStep(w, d, x, y):
-    return 0.09
-"""
-
+def testLogRegres(weights, test_x, test_y):
+	numSamples, numFeatures = shape(test_x)
+	matchCount = 0
+	for i in range(0, numSamples):
+		predict = sigmoid(test_x[i, :] * weights)[0, 0] > 0.5
+		if predict == bool(test_y[i, 0]):
+			matchCount += 1
+	accuracy = float(matchCount) / numSamples
+	return accuracy
 
 # min J(a) = -( y * log(ha(x)) + (1 - y) * log(1 - ha(x)) )
 def trainLBFGS(train_x, train_y, opts):
@@ -74,6 +62,7 @@ def trainLBFGS(train_x, train_y, opts):
 
     numSamples, numFeatures = shape(train_x)
     maxIter = opts['maxIter']; m = opts['windowLen']
+    print 'window length = %d' % m
     w = ones((numFeatures, 1))
     g = gk(w, train_x, train_y);
     k = 0
@@ -92,6 +81,7 @@ def trainLBFGS(train_x, train_y, opts):
         s = lamda * d
         w = w + s
         ng = gk(w, train_x, train_y)
+        #print s.transpose() * s
 
         accuracy = testLogRegres(w, train_x, train_y)
         print '%d times, The classify accuracy is: %.3f%%\tlamda = %f\tgradecent = %f\tchangeofw = %f' % (k, accuracy * 100, lamda,(ng.transpose() * ng), (s.transpose() * s) )
@@ -138,6 +128,7 @@ def trainLBFGS(train_x, train_y, opts):
     
     print 'Congratulations, training complete! Took %fs!' % (time.time() - startTime)
     return w
+
 
 
 

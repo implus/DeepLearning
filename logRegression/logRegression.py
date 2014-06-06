@@ -48,7 +48,9 @@ def trainLogRegres(train_x, train_y, opts):
 				#del(dataIndex[randIndex]) # during one interation, delete the optimized sample
 		else:
 			raise NameError('Not support optimize method type!')
-		lxshow += 1;print '%d times, accuracy = %f' % (lxshow, testLogRegres(weights, train_x, train_y))
+		lxshow += 1
+		if lxshow % 10 == 1:
+		    print '%d times, accuracy = %f' % (lxshow, testLogRegres(weights, train_x, train_y))
 		#if lxshow % 10 == 1:
 		    #showLogRegres(weights, train_x, train_y)
 	
