@@ -2,6 +2,7 @@ from BFGS import *
 from LBFGS import *
 from numpy import *
 from LxBFGS import *
+from LxDFP import *
 import matplotlib.pyplot as plt
 import time
 
@@ -59,22 +60,45 @@ def gaoLBFGS(fileStr, maxIter, windowLen):
     showLogRegres(w, train_x, train_y)
 
 
+def gaoLxDFP(fileStr, maxIter):
+    train_x, train_y = loadData(fileStr)
+    test_x = train_x; test_y = train_y
+    print "---------------LxDFP method---------------------"
+    opts = {'maxIter': maxIter}
+    w = trainLxDFP(train_x, train_y, opts)
+    ac = testLogRegres(w, train_x, train_y)
+    print 'The classify accuracy is: %.3f%%\n' % (ac * 100)
+    print w
+    showLogRegres(w, train_x, train_y)
+
+
 #nosqrt+0.01 { 17, 1, 6 }  
-gaoLBFGS('./testSet.txt', 100, 2);
-gaoLBFGS('./in1000.txt', 100, 2);
-gaoLBFGS('./in.txt', 100, 2);
+def testLBFGS():
+    gaoLBFGS('./testSet.txt', 100, 1);
+    gaoLBFGS('./in1000.txt', 100, 1);
+    gaoLBFGS('./in.txt', 100, 1);
 
 
 #nosqrt+0.01 { 10, 16, 4 }
-'''
-gaoBFGS('./testSet.txt', 20);
-gaoBFGS('./in1000.txt', 100);
-gaoBFGS('./in.txt', 20);
-'''
+def testBFGS():
+    gaoBFGS('./testSet.txt', 20);
+    gaoBFGS('./in1000.txt', 100);
+    gaoBFGS('./in.txt', 20);
 
 #nosqrt+0.01 { 10, 17, 5 }
-'''
-gaoLxBFGS('./testSet.txt', 20);
-gaoLxBFGS('./in1000.txt', 100);
-gaoLxBFGS('./in.txt', 40);
-'''
+def testLxBFGS():
+    gaoLxBFGS('./testSet.txt', 20);
+    gaoLxBFGS('./in1000.txt', 100);
+    gaoLxBFGS('./in.txt', 40);
+
+
+def testLxDFP():
+    gaoLxDFP('./testSet.txt', 20);
+    gaoLxDFP('./in1000.txt', 100);
+    gaoLxDFP('./in.txt', 40);
+
+
+#testLBFGS()
+#testBFGS()
+testLxBFGS()
+#testLxDFP()

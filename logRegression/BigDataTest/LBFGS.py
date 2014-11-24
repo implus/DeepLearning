@@ -4,7 +4,7 @@ import time
 
 EXP_LIMIT = 20
 tereps = 1e-3
-eps = 1e-300
+eps = 1e-20
 inf = 1e300
 
 def sigmoid(a):
@@ -84,7 +84,7 @@ def trainLBFGS(train_x, train_y, opts):
         #print s.transpose() * s
 
         accuracy = testLogRegres(w, train_x, train_y)
-        print '%d times, The classify accuracy is: %.3f%%\tlamda = %f\tgradecent = %f\tchangeofw = %f' % (k, accuracy * 100, lamda,(ng.transpose() * ng), (s.transpose() * s) )
+        print '%d times, The classify accuracy is: %.3f%%\tlamda = %f\tgradecent = %f\tchangeofw = %f\tf(x) = %f' % (k, accuracy * 100, lamda,(ng.transpose() * ng), (s.transpose() * s), Ja(w, train_x, train_y) )
         if ng.transpose() * ng < tereps or s.transpose() * s < tereps:
             break
         y = ng - g

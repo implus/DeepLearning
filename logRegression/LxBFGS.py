@@ -4,7 +4,7 @@ import time
 from logRegression import *
 
 EXP_LIMIT = 20
-eps = 1e-300
+eps = 1e-10
 inf = 1e300
 tereps = 1e-3
 
@@ -41,7 +41,7 @@ def Ja(w, x, y):
 
 
 def optStep(w, d, x, y):
-    lamda = sqrt((w.transpose() * w)[0, 0] / ((w - d).transpose() * (w - d))[0, 0]);
+    lamda = ((w.transpose() * w)[0, 0] / ((w - d).transpose() * (w - d))[0, 0]);
     #lamda = sqrt(1.0 / float((w - d).transpose() * (w - d)));
     #lamda = 1;0.1;
     #lamda = (w.transpose() * w)[0, 0] / (d.transpose() * d)[0, 0]
@@ -86,7 +86,7 @@ def trainLxBFGS(train_x, train_y, opts):
         ng = gk(w, train_x, train_y)
 
         accuracy = testLogRegres(w, train_x, train_y)
-        print '%d times, The classify accuracy is: %.3f%%\tlamda = %f\tgradecent = %f\tchangeofw = %f' % (k, accuracy * 100, lamda,(ng.transpose() * ng), (s.transpose() * s) )
+        print '%d times, The classify accuracy is: %.3f%%\tlamda = %f\tgradecent = %f\tchangeofw = %f\tf(x) = %f' % (k, accuracy * 100, lamda,(ng.transpose() * ng), (s.transpose() * s), Ja(w, train_x, train_y) )
         if ng.transpose() * ng < tereps:
             break
         y = ng - g

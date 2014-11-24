@@ -82,7 +82,7 @@ def trainBFGS(train_x, train_y, opts):
         ng = gk(w, train_x, train_y)
 
         accuracy = testLogRegres(w, train_x, train_y)
-        print '%d times, The classify accuracy is: %.3f%%\tlamda = %f\tgradecent = %f\tchangeofw = %f' % (k, accuracy * 100, lamda,(ng.transpose() * ng), (s.transpose() * s) )
+        print '%d times, The classify accuracy is: %.3f%%\tlamda = %f\tgradecent = %f\tchangeofw = %f\tf(x) = %f' % (k, accuracy * 100, lamda,(ng.transpose() * ng), (s.transpose() * s), Ja(w, train_x, train_y) )
         if ng.transpose() * ng < tereps or s.transpose() * s < tereps:
             break
         y = ng - g

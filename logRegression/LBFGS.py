@@ -5,9 +5,8 @@ from logRegression import *
 
 EXP_LIMIT = 20
 tereps = 1e-3
-eps = 1e-300
+eps = 1e-10
 inf = 1e300
-
 def sigmoid(a):
     return  1.0 / (1.0 + exp(-a))
 
@@ -94,7 +93,7 @@ def trainLBFGS(train_x, train_y, opts):
         ng = gk(w, train_x, train_y)
 
         accuracy = testLogRegres(w, train_x, train_y)
-        print '%d times, The classify accuracy is: %.3f%%\tlamda = %f\tgradecent = %f\tchangeofw = %f' % (k, accuracy * 100, lamda,(ng.transpose() * ng), (s.transpose() * s) )
+        print '%d times, The classify accuracy is: %.3f%%\tlamda = %f\tgradecent = %f\tchangeofw = %f\tf(x) = %f' % (k, accuracy * 100, lamda,(ng.transpose() * ng), (s.transpose() * s), Ja(w, train_x, train_y) )
         if ng.transpose() * ng < tereps or s.transpose() * s < tereps:
             break
         y = ng - g

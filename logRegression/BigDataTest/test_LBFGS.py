@@ -1,5 +1,7 @@
 from LBFGS import *
 from LxBFGS import *
+from LxDFP import *
+from LxDFP2 import *
 from BFGS import *
 from numpy import *
 import time
@@ -80,7 +82,7 @@ def gaoLBFGS(fileTrain, fileTest, maxIter):
     train_x, train_y, test_x, test_y = loadData(fileTrain, fileTest, dictionary)
     print "---------------LBFGS method---------------------"
     mx = findMax(fileTrain)
-    opts = {'maxIter': maxIter, 'windowLen':int(log(mx))}
+    opts = {'maxIter': maxIter, 'windowLen':int(1)}
     w = trainLBFGS(train_x, train_y, opts)
     ac = testLogRegres(w, test_x, test_y)
     print 'The classify accuracy is: %.3f%%\n' % (ac * 100)
@@ -117,8 +119,18 @@ def gaoGraDecent(fileTrain, fileTest, maxIter):
     print w
 
 
+def gaoLxDFP(fileTrain, fileTest, maxIter):
+    train_x, train_y, test_x, test_y = loadData(fileTrain, fileTest, dictionary)
+    print "---------------LxDFP method---------------------"
+    mx = findMax(fileTrain)
+    opts = {'maxIter': maxIter }
+    w = trainLxDFP2(train_x, train_y, opts)
+    ac = testLogRegres(w, test_x, test_y)
+    print 'The classify accuracy is: %.3f%%\n' % (ac * 100)
+    print w
+
 # nosqrt+0.01: { 32(82.25%) }   sqrt+0.01: { 8(80.25%) }   sqrt+0.5: { 9(83.75%) }  2~7s
-#gaoLBFGS('./train.txt', './test.txt', 100)
+gaoLBFGS('./train.txt', './test.txt', 100)
 
 # nosqrt+0.01: { 8(80.5%) }     sqrt+0.01: { 32(82.25%) }   2~7s
 #gaoLxBFGS('./train.txt', './test.txt', 200)
@@ -130,3 +142,4 @@ def gaoGraDecent(fileTrain, fileTest, maxIter):
 #gaoGraDecent('./train.txt', './test.txt', 200)
 
 
+#gaoLxDFP('./train.txt', './test.txt', 200)

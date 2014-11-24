@@ -4,9 +4,9 @@ import time
 from LBFGS import *
 
 EXP_LIMIT = 20
-eps = 1e-300
+eps = 1e-10
 inf = 1e300
-tereps = 1e-3
+tereps = 1e-6
 
 def sigmoid(a):
     return  1.0 / (1.0 + exp(-a))
@@ -85,7 +85,7 @@ def trainLxBFGS(train_x, train_y, opts):
         ng = gk(w, train_x, train_y)
 
         accuracy = testLogRegres(w, train_x, train_y)
-        print '%d times, The classify accuracy is: %.3f%%\tlamda = %f\tgradecent = %f\tchangeofw = %f' % (k, accuracy * 100, lamda,(ng.transpose() * ng), (s.transpose() * s) )
+        print '%d times, The classify accuracy is: %.3f%%\tlamda = %f\tgradecent = %f\tchangeofw = %f\tf(x) = %f' % (k, accuracy * 100, lamda,(ng.transpose() * ng), (s.transpose() * s), Ja(w, train_x, train_y) )
         if ng.transpose() * ng < tereps or s.transpose() * s < tereps:
             break
         y = ng - g
@@ -94,7 +94,7 @@ def trainLxBFGS(train_x, train_y, opts):
         #p = (1 / (s.transpose() * y))
         #D = D + s * s.transpose() * float(p + p * p * (y.transpose() * D * y)) - (D * y * s.transpose() + s * y.transpose() * D) * float(p) # O(n^2)
         u = s - D * y;
-        p = 1.0 / float(u.transpose() * y)
+        p = 1.0 / float(u.transpose() * y) 
         D = D + p * u * u.transpose()
         k = k + 1
     
